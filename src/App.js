@@ -17,6 +17,7 @@ export function App() {
     addCell(3, 3, 2);
     addCell(2, 3, 2);
     // addCell(0, 3, 4);
+    addCell(0, 3, 4);
   }, []);
 
   function addCell(x, y, count) {
@@ -29,29 +30,72 @@ export function App() {
 
   function handleLeft(e) {
     if (e.key === "a") {
-      setGridState((state) => {
-        const newState = state.map((row) => row.map((cell) => cell));
+      // setGridState((state) => state.map((row) => row.map((cell) => 2)));
 
-        for (let y = 0; y < newState.length; y++) {
-          for (let x = 0; x < newState[y].length; x++) {
-            if (newState[y][x] === newState[y][x + 1]) {
-              newState[y][0] = newState[y][x] * 2;
-              newState[y][x] = 0;
-              newState[y][x + 1] = 0;
+      // setGridState((state) =>
+      //   state.map((row) =>
+      //     row.reduce((prev, curr, index) => {
+      //       const res = [+prev + +curr];
+      //       console.log(res);
+      //       return [...res, 0, 0, 0];
+      //     }, [])
+      //   )
+      // );
+
+      setGridState((state) =>
+        state.map((row) => {
+          console.log(row);
+
+          for (let x = 0; x < row.length; x++) {
+            if (row[x] && row[x] === row[x + 1]) {
+              if (!row[0]) {
+                row[0] = row[x] * 2;
+                row[x] = 0;
+                row[x + 1] = 0;
+              }
+              row[x - 1] = row[x] * 2;
             }
           }
-        }
 
-        console.log(newState);
+          return row;
 
-        return newState;
-      });
+          // let [a0, a1, a2, a3] = row;
+
+          // if (a2 === a3) {
+          //   a0 = a2 * 2;
+          //   a2 = 0;
+          //   a3 = 0;
+          // }
+
+          // return [a0, a1, a2, a3];
+        })
+      );
     }
+    //   setGridState((state) => {
+    //     const newState = state.map((row) => row.map((cell) => cell));
+
+    //     for (let y = 0; y < newState.length; y++) {
+    //       for (let x = 0; x < newState[y].length; x++) {
+    //         if (newState[y][x] === newState[y][x + 1]) {
+    //           newState[y][0] = newState[y][x] * 2;
+    //           newState[y][x] = 0;
+    //           newState[y][x + 1] = 0;
+    //         }
+    //       }
+    //     }
+
+    //     console.log(newState);
+
+    //     state[0][0] = 2;
+
+    //     return state;
+    //   });
+    // }
   }
 
-  document.addEventListener("keydown", (e) => handleLeft(e));
-
   console.log(gridState);
+
+  document.addEventListener("keypress", (e) => handleLeft(e));
 
   return (
     <Wrapper>
