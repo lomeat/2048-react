@@ -1,73 +1,87 @@
 import React from "react";
-import {
-  Stage,
-  Container,
-  Sprite,
-  useTick,
-  AppProvider,
-  useApp,
-} from "@pixi/react";
-
-import player from "./assets/player.png";
+import styled from "styled-components";
 
 export function App() {
-  const [width, height] = [500, 500];
+  const gridWidth = 400;
+  const cellWidth = 100;
 
-  const stageProps = {
-    width,
-    height,
-    options: {
-      backgroundColor: 0xffffff,
-      antialisis: true,
-    },
-  };
+  const [gridState, setGridState] = React.useState([
+    "....",
+    "....",
+    "....",
+    "....",
+  ]);
 
-  const containerStyle = {
-    display: "block",
-    border: "2px solid black",
-    width,
-    height,
-    margin: "100px auto",
-  };
+  React.useEffect(() => {
+    addCell(3, 0, 6);
+  }, []);
 
-  // const { move, x } = PlayerController();
+  // console.log(state);
 
-  // move();
+  function addCell(x, y, count) {
+    setGridState((state) => {
+      console.log(state);
 
-  return (
-    <div style={{ ...containerStyle }}>
-      <Stage {...stageProps}>
-        <Scene sizes={[width, height]}>
-          <Player />
-        </Scene>
-      </Stage>
-    </div>
-  );
-}
-
-export function Scene(props) {
-  const [width, height] = props?.sizes;
-
-  const app = useApp();
-
-  return (
-    <Container width={width} height={height}>
-      <AppProvider value={app}>{props.children}</AppProvider>
-    </Container>
-  );
-}
-
-function Player(props) {
-  // const [speed, setSpeed] = React.useState(10);
-  const speed = 10;
-
-  const [x, setX] = React.useState(0);
-
-  function move(dt) {
-    setX((state) => state * dt * speed);
+      return state.map((row, ri) =>
+        row.split("").map((col, ci) => (ri === y && ci === x ? count : col))
+      );
+    });
   }
 
-  useTick((dt) => move(dt));
-
-  return <Sprite y={100} x={x} image={player} width={50} height={50}></Sprite>;
+  return (
+    <Wrapper>
+      <Grid width={gridWidth}>
+        <Cell width={cellWidth} count={2} position={[0, 3]} />
+        <Cell width={cellWidth} count={4} position={[3, 0]} />
+      </Grid>
+    </Wrapper>
+  );
 }
+
+function Cell({ width = 100, count, position }) {
+  const cellRef = React.useRef(null);
+
+  const [x, setX] = React.useState(0);
+  const [y, setY] = React.useState(0);
+
+  React.useLayoutEffect(() => {
+    setX(position[0] * width);
+    setY(position[1] * width);
+  }, [position, width]);
+
+  return (
+    <CellWrapper ref={cellRef} width={width} x={x} y={y}>
+      {count}
+    </CellWrapper>
+  );
+}
+
+const Wrapper = styled.div`
+  margin: 100px auto;
+  width: 400px;
+  display: flex;
+`;
+
+const Grid = styled.div`
+  background: brown;
+  width: ${({ width }) => width ?? 400}px;
+  height: ${({ width }) => width ?? 400}px;
+  position: relative;
+`;
+
+const CellWrapper = styled.div`
+  background: yellow;
+  width: ${({ width }) => width ?? 100}px;
+  height: ${({ width }) => width ?? 100}px;
+  border: 1px solid black;
+  box-sizing: border-box;
+
+  position: absolute;
+  left: ${({ x }) => x}px;
+  top: ${({ y }) => y}px;
+
+  font-size: 24px;
+  font-family: "Fira Code", sans;
+  text-align: center;
+  line-height: ${({ width }) => width ?? 100}px;
+`;
