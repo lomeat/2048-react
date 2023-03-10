@@ -15,37 +15,133 @@ const height = initBoard[0].length;
 // [movement]
 
 function moveLeft(oldBoard) {
-  const board = oldBoard.map((line) => line.map((cell) => cell));
-  for (let y = 0; y < height; y++) {
-    const values = board[y].filter((cell) => cell !== 0);
-    values.push(...Array.from({ length: width }, () => 0));
+  const board = oldBoard.map((row) => row.map((cell) => cell));
 
-    for (let i = 0; i < width - 1; i++) {
-      if (values[i] !== 0 && values[i] === values[i + 1]) {
-        values[i] = values[i] * 2;
-
-        for (let t = i + 1; t < width; t++) {
-          values[t] = values[t + 1];
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      if (board[i][j] !== 0) {
+        for (let k = j - 1; k >= 0; k--) {
+          if (board[i][k] === 0) {
+            board[i][k] = board[i][k + 1];
+            board[i][k + 1] = 0;
+          } else if (board[i][k] === board[i][k + 1]) {
+            board[i][k] *= 2;
+            board[i][k + 1] = 0;
+            break;
+          } else {
+            break;
+          }
         }
       }
     }
-
-    values.length = width;
-    board[y] = values;
   }
-  return board;
+  const newBoard = spawn(board);
+
+  return newBoard;
 }
 
 function moveRight(oldBoard) {
-  return oldBoard;
+  const board = oldBoard.map((row) => row.map((cell) => cell));
+
+  for (let i = 0; i < height; i++) {
+    for (let j = width - 1; j >= 0; j--) {
+      if (board[i][j] !== 0) {
+        for (let k = j + 1; k < width; k++) {
+          if (board[i][k] === 0) {
+            board[i][k] = board[i][k - 1];
+            board[i][k - 1] = 0;
+          } else if (board[i][k] === board[i][k - 1]) {
+            board[i][k] *= 2;
+            board[i][k - 1] = 0;
+            break;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  }
+  const newBoard = spawn(board);
+
+  return newBoard;
 }
 
 function moveUp(oldBoard) {
-  return oldBoard;
+  const board = oldBoard.map((row) => row.map((cell) => cell));
+
+  for (let j = 0; j < width; j++) {
+    for (let i = 0; i < height; i++) {
+      if (board[i][j] !== 0) {
+        for (let k = i - 1; k >= 0; k--) {
+          if (board[k][j] === 0) {
+            board[k][j] = board[k + 1][j];
+            board[k + 1][j] = 0;
+          } else if (board[k][j] === board[k + 1][j]) {
+            board[k][j] *= 2;
+            board[k + 1][j] = 0;
+            break;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  }
+  const newBoard = spawn(board);
+
+  return newBoard;
 }
 
 function moveDown(oldBoard) {
-  return oldBoard;
+  const board = oldBoard.map((row) => row.map((cell) => cell));
+
+  for (let j = 0; j < width; j++) {
+    for (let i = height - 2; i >= 0; i--) {
+      if (board[i][j] !== 0) {
+        for (let k = i + 1; k < height; k++) {
+          if (board[k][j] === 0) {
+            board[k][j] = board[k - 1][j];
+            board[k - 1][j] = 0;
+          } else if (board[k][j] === board[k - 1][j]) {
+            board[k][j] *= 2;
+            board[k - 1][j] = 0;
+            break;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  const newBoard = spawn(board);
+
+  return newBoard;
+}
+
+function spawn(board) {
+  const emptyCells = [];
+
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
+      if (board[i][j] === 0) {
+        emptyCells.push({ x: i, y: j });
+      }
+    }
+  }
+
+  if (emptyCells.length === 0) {
+    return board;
+  }
+
+  const randomIndex = Math.floor(Math.random() * emptyCells.length);
+  const { x, y } = emptyCells[randomIndex];
+
+  const newValue = Math.random() < 0.9 ? 2 : 4;
+
+  board[x][y] = newValue;
+
+  return board;
 }
 
 const movement = {
