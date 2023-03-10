@@ -1,4 +1,4 @@
-import { boardWidth, boardHeight } from "./init";
+import { boardWidth, boardHeight } from "./constants";
 
 // Movement Overall
 
@@ -34,6 +34,16 @@ export function spawn(board) {
   board[x][y] = newValue;
 
   return board;
+}
+
+// Check gameover conditions
+
+export function checkGameOver(board) {
+  const emptyCells = board.filter(
+    (row) => row.filter((cell) => cell === 0).length
+  );
+
+  return emptyCells.length === 0;
 }
 
 // Movement Methods
